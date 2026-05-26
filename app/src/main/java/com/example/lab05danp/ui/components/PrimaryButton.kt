@@ -1,4 +1,4 @@
-package com.example.lab05danp.ui.components.buttons
+package com.example.lab05danp.ui.components
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.Button

@@ -10,34 +10,34 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 
+import androidx.compose.material.icons.filled.List
+import androidx.compose.ui.graphics.Color
+
 @Composable
-fun AppBottomBar() {
-    NavigationBar {
+fun AppBottomBar(
+    currentRoute: String = "inicio",
+    onNavigateToHistory: () -> Unit = {},
+    onNavigateToHome: () -> Unit = {},
+    onNavigateToCart: () -> Unit = {}
+) {
+    NavigationBar(containerColor = Color(0xFFFFF59D)) {
         NavigationBarItem(
-            selected = true,
-            onClick = { },
-            icon = {
-                Icon(
-                    imageVector = Icons.Default.Home,
-                    contentDescription = null
-                )
-            },
-            label = {
-                Text("Inicio")
-            }
+            selected = currentRoute == "historial",
+            onClick = onNavigateToHistory,
+            icon = { Icon(Icons.Default.List, contentDescription = null, tint = Color(0xFF1565C0)) },
+            label = { Text("Historial", color = Color(0xFF1565C0)) }
         )
         NavigationBarItem(
-            selected = false,
-            onClick = { },
-            icon = {
-                Icon(
-                    imageVector = Icons.Default.ShoppingCart,
-                    contentDescription = null
-                )
-            },
-            label = {
-                Text("Carrito")
-            }
+            selected = currentRoute == "inicio",
+            onClick = onNavigateToHome,
+            icon = { Icon(Icons.Default.Home, contentDescription = null, tint = Color(0xFF1565C0)) },
+            label = { Text("Inicio", color = Color(0xFF1565C0)) }
+        )
+        NavigationBarItem(
+            selected = currentRoute == "carrito",
+            onClick = onNavigateToCart,
+            icon = { Icon(Icons.Default.ShoppingCart, contentDescription = null, tint = Color(0xFF1565C0)) },
+            label = { Text("Carrito", color = Color(0xFF1565C0)) }
         )
     }
 }
