@@ -12,17 +12,31 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.lab05danp.data.repository.CartRepositoryImpl
+import com.example.lab05danp.data.repository.OrderRepositoryImpl
 import com.example.lab05danp.data.repository.ProductRepositoryImpl
+import com.example.lab05danp.data.repository.SessionRepositoryImpl
 import com.example.lab05danp.data.repository.UserRepositoryImpl
 import com.example.lab05danp.ui.AppViewModel
+import com.example.lab05danp.ui.AppViewModelFactory
 import com.example.lab05danp.ui.screens.CartScreen
+import com.example.lab05danp.ui.screens.CartViewModel
 import com.example.lab05danp.ui.screens.CheckoutScreen
+import com.example.lab05danp.ui.screens.CheckoutViewModel
 import com.example.lab05danp.ui.screens.HistoryScreen
+import com.example.lab05danp.ui.screens.HistoryViewModel
 import com.example.lab05danp.ui.screens.HomeScreen
+import com.example.lab05danp.ui.screens.HomeViewModel
 import com.example.lab05danp.ui.screens.LoginScreen
+import com.example.lab05danp.ui.screens.LoginViewModel
+import com.example.lab05danp.ui.screens.OrderDetailScreen
 import com.example.lab05danp.ui.screens.ProductDetailScreen
+import com.example.lab05danp.ui.screens.ProductDetailViewModel
 import com.example.lab05danp.ui.screens.ProfileScreen
+import com.example.lab05danp.ui.screens.ProfileViewModel
 import com.example.lab05danp.ui.screens.RegisterScreen
+import com.example.lab05danp.ui.screens.RegisterViewModel
 import com.example.lab05danp.ui.theme.Lab05DANPTheme
 
 class MainActivity : ComponentActivity() {
@@ -35,13 +49,29 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    val viewModel = remember {
-                        AppViewModel(
-                            userRepository = UserRepositoryImpl(),
-                            productRepository = ProductRepositoryImpl()
+                    // Inicializar Singleton Repositories
+                    val userRepository = remember { UserRepositoryImpl() }
+                    val productRepository = remember { ProductRepositoryImpl() }
+                    val sessionRepository = remember { SessionRepositoryImpl() }
+                    val cartRepository = remember { CartRepositoryImpl() }
+                    val orderRepository = remember { OrderRepositoryImpl() }
+
+                    // Navigation ViewModel
+                    val appViewModel = remember { AppViewModel() }
+
+                    // Factory para inyectar dependencias a los ViewModels
+                    val factory = remember {
+                        AppViewModelFactory(
+                            userRepository = userRepository,
+                            productRepository = productRepository,
+                            sessionRepository = sessionRepository,
+                            cartRepository = cartRepository,
+                            orderRepository = orderRepository,
+                            appViewModel = appViewModel
                         )
                     }
-                    MarketplaceApp(viewModel)
+
+                    MarketplaceApp(appViewModel, factory)
                 }
             }
         }
@@ -49,84 +79,113 @@ class MainActivity : ComponentActivity() {
 }
 
 enum class Screen {
-    LOGIN, REGISTER, HOME, HISTORY, CART, CHECKOUT, PRODUCT_DETAIL, PROFILE
+    LOGIN, REGISTER, HOME, HISTORY, CART, CHECKOUT, PRODUCT_DETAIL, ORDER_DETAIL, PROFILE
 }
 
 @Composable
-fun MarketplaceApp(viewModel: AppViewModel) {
+fun MarketplaceApp(appViewModel: AppViewModel, factory: AppViewModelFactory) {
 
-    val currentScreen by viewModel.currentScreen.collectAsState()
-    val currentUser by viewModel.currentUser.collectAsState()
-    val selectedProduct by viewModel.selectedProduct.collectAsState()
-    val cartItems by viewModel.cartItems.collectAsState()
+    val currentScreen by appViewModel.currentScreen.collectAsState()
+    val selectedProduct by appViewModel.selectedProduct.collectAsState()
+    val selectedOrder by appViewModel.selectedOrder.collectAsState()
 
     when (currentScreen) {
-
-        Screen.LOGIN -> LoginScreen(
-            userRepository = viewModel.userRepository as UserRepositoryImpl,
-            onLoginSuccess = { user -> viewModel.loginSuccess(user) },
-            onNavigateToRegister = { viewModel.navigateTo(Screen.REGISTER) }
-        )
-
-        Screen.REGISTER -> RegisterScreen(
-            userRepository = viewModel.userRepository as UserRepositoryImpl,
-            onRegisterSuccess = { user -> viewModel.registerSuccess(user) },
-            onNavigateToLogin = { viewModel.navigateTo(Screen.LOGIN) }
-        )
-
-        Screen.HOME -> HomeScreen(
-            onNavigateToDetails = { product -> viewModel.selectProduct(product) },
-            onNavigateToHistory = { viewModel.navigateTo(Screen.HISTORY) },
-            onNavigateToCart = { viewModel.navigateTo(Screen.CART) },
-            onNavigateToProfile = { viewModel.navigateTo(Screen.PROFILE) }
-        )
-
-        Screen.HISTORY -> HistoryScreen(
-            onNavigateToHome = { viewModel.navigateTo(Screen.HOME) },
-            onNavigateToCart = { viewModel.navigateTo(Screen.CART) }
-        )
-
-        Screen.PRODUCT_DETAIL -> selectedProduct?.let { product ->
-            ProductDetailScreen(
-                product = product,
-                onAddToCart = { prod, quantity -> viewModel.addToCart(prod, quantity) },
-                onNavigateToHistory = { viewModel.navigateTo(Screen.HISTORY) },
-                onNavigateToHome = { viewModel.navigateTo(Screen.HOME) },
-                onNavigateToCart = { viewModel.navigateTo(Screen.CART) }
+        Screen.LOGIN -> {
+            val viewModel: LoginViewModel = viewModel(factory = factory)
+            LoginScreen(
+                viewModel = viewModel,
+                onLoginSuccess = { appViewModel.navigateTo(Screen.HOME) },
+                onNavigateToRegister = { appViewModel.navigateTo(Screen.REGISTER) }
             )
-        } ?: run { viewModel.navigateTo(Screen.HOME) }
+        }
 
-        Screen.CART -> CartScreen(
-            cartItems = cartItems,
-            onCheckout = { viewModel.navigateTo(Screen.CHECKOUT) },
-            onNavigateToHistory = { viewModel.navigateTo(Screen.HISTORY) },
-            onNavigateToHome = { viewModel.navigateTo(Screen.HOME) },
-            onNavigateToProfile = { viewModel.navigateTo(Screen.PROFILE) }
-        )
+        Screen.REGISTER -> {
+            val viewModel: RegisterViewModel = viewModel(factory = factory)
+            RegisterScreen(
+                viewModel = viewModel,
+                onRegisterSuccess = { appViewModel.navigateTo(Screen.HOME) },
+                onNavigateToLogin = { appViewModel.navigateTo(Screen.LOGIN) }
+            )
+        }
 
-        Screen.CHECKOUT -> currentUser?.let { user ->
+        Screen.HOME -> {
+            val viewModel: HomeViewModel = viewModel(factory = factory)
+            HomeScreen(
+                viewModel = viewModel,
+                onNavigateToDetails = { product -> appViewModel.selectProductAndNavigate(product) },
+                onNavigateToHistory = { appViewModel.navigateTo(Screen.HISTORY) },
+                onNavigateToCart = { appViewModel.navigateTo(Screen.CART) },
+                onNavigateToProfile = { appViewModel.navigateTo(Screen.PROFILE) }
+            )
+        }
+
+        Screen.HISTORY -> {
+            val viewModel: HistoryViewModel = viewModel(factory = factory)
+            HistoryScreen(
+                viewModel = viewModel,
+                onNavigateToHome = { appViewModel.navigateTo(Screen.HOME) },
+                onNavigateToCart = { appViewModel.navigateTo(Screen.CART) },
+                onNavigateToOrderDetails = { order -> appViewModel.selectOrderAndNavigate(order) }
+            )
+        }
+
+        Screen.PRODUCT_DETAIL -> {
+            selectedProduct?.let { product ->
+                val viewModel: ProductDetailViewModel = viewModel(factory = factory)
+                ProductDetailScreen(
+                    viewModel = viewModel,
+                    product = product,
+                    onNavigateToHistory = { appViewModel.navigateTo(Screen.HISTORY) },
+                    onNavigateToHome = { appViewModel.navigateTo(Screen.HOME) },
+                    onNavigateToCart = { appViewModel.navigateTo(Screen.CART) }
+                )
+            } ?: run { appViewModel.navigateTo(Screen.HOME) }
+        }
+
+        Screen.ORDER_DETAIL -> {
+            selectedOrder?.let { order ->
+                OrderDetailScreen(
+                    order = order,
+                    onNavigateToHistory = { appViewModel.navigateTo(Screen.HISTORY) },
+                    onNavigateToHome = { appViewModel.navigateTo(Screen.HOME) },
+                    onNavigateToCart = { appViewModel.navigateTo(Screen.CART) },
+                    onNavigateToProfile = { appViewModel.navigateTo(Screen.PROFILE) }
+                )
+            } ?: run { appViewModel.navigateTo(Screen.HISTORY) }
+        }
+
+        Screen.CART -> {
+            val viewModel: CartViewModel = viewModel(factory = factory)
+            CartScreen(
+                viewModel = viewModel,
+                onCheckout = { appViewModel.navigateTo(Screen.CHECKOUT) },
+                onNavigateToHistory = { appViewModel.navigateTo(Screen.HISTORY) },
+                onNavigateToHome = { appViewModel.navigateTo(Screen.HOME) },
+                onNavigateToProfile = { appViewModel.navigateTo(Screen.PROFILE) }
+            )
+        }
+
+        Screen.CHECKOUT -> {
+            val viewModel: CheckoutViewModel = viewModel(factory = factory)
             CheckoutScreen(
-                cartItems = cartItems,
-                user = user,
-                onConfirmOrder = {
-                    viewModel.clearCart()
-                    viewModel.navigateTo(Screen.HISTORY)
-                },
-                onNavigateToHistory = { viewModel.navigateTo(Screen.HISTORY) },
-                onNavigateToHome = { viewModel.navigateTo(Screen.HOME) },
-                onNavigateToCart = { viewModel.navigateTo(Screen.CART) },
-                onNavigateToProfile = { viewModel.navigateTo(Screen.PROFILE) }
+                viewModel = viewModel,
+                onConfirmSuccess = { appViewModel.navigateTo(Screen.HISTORY) },
+                onNavigateToHistory = { appViewModel.navigateTo(Screen.HISTORY) },
+                onNavigateToHome = { appViewModel.navigateTo(Screen.HOME) },
+                onNavigateToCart = { appViewModel.navigateTo(Screen.CART) },
+                onNavigateToProfile = { appViewModel.navigateTo(Screen.PROFILE) }
             )
-        } ?: run { viewModel.navigateTo(Screen.LOGIN) }
+        }
 
-        Screen.PROFILE -> currentUser?.let { user ->
+        Screen.PROFILE -> {
+            val viewModel: ProfileViewModel = viewModel(factory = factory)
             ProfileScreen(
-                user = user,
-                onLogout = { viewModel.logout() },
-                onNavigateToHistory = { viewModel.navigateTo(Screen.HISTORY) },
-                onNavigateToHome = { viewModel.navigateTo(Screen.HOME) },
-                onNavigateToCart = { viewModel.navigateTo(Screen.CART) }
+                viewModel = viewModel,
+                onLogoutSuccess = { appViewModel.navigateTo(Screen.LOGIN) },
+                onNavigateToHistory = { appViewModel.navigateTo(Screen.HISTORY) },
+                onNavigateToHome = { appViewModel.navigateTo(Screen.HOME) },
+                onNavigateToCart = { appViewModel.navigateTo(Screen.CART) }
             )
-        } ?: run { viewModel.navigateTo(Screen.LOGIN) }
+        }
     }
 }
