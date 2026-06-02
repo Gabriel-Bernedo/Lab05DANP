@@ -2,8 +2,8 @@ package com.example.lab05danp.data.repository
 
 import com.example.lab05danp.data.model.Product
 
-class ProductRepository {
-    fun getProducts(): List<Product> {
+class ProductRepositoryImpl : IProductRepository {
+    override fun getProducts(): List<Product> {
         return listOf(
             Product(1, "Laptop", 1500.0),
             Product(2, "Televisor 4K 55\"", 2500.0),

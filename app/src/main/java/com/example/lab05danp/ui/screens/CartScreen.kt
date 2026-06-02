@@ -29,13 +29,17 @@ import com.example.lab05danp.ui.components.CartItemCard
 import com.example.lab05danp.ui.components.ScreenHeader
 import com.example.lab05danp.ui.navigation.AppBottomBar
 import com.example.lab05danp.ui.navigation.AppTopBar
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.draw.shadow
 
 @Composable
 fun CartScreen(
     cartItems: List<CartItem>,
     onCheckout: () -> Unit,
     onNavigateToHistory: () -> Unit,
-    onNavigateToHome: () -> Unit
+    onNavigateToHome: () -> Unit,
+    onNavigateToProfile: () -> Unit
 ) {
     val totalAmount = cartItems.sumOf { it.subtotal }
 
@@ -45,7 +49,8 @@ fun CartScreen(
             currentRoute = "carrito",
             onNavigateToHistory = onNavigateToHistory,
             onNavigateToHome = onNavigateToHome,
-            onNavigateToCart = {}
+            onNavigateToCart = {},
+            onNavigateToProfile = onNavigateToProfile
         ) }
     ) { paddingValues ->
         Column(
@@ -65,25 +70,25 @@ fun CartScreen(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(Color(0xFFFFF59D))
-                    .border(1.dp, Color.Gray)
+                    .shadow(elevation = 6.dp, shape = RoundedCornerShape(16.dp))
+            .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(16.dp))
                     .padding(16.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
                     text = "TOTAL :\n${totalAmount.toInt()} USD",
-                    color = Color(0xFF1565C0),
+                    color = MaterialTheme.colorScheme.primary,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold
                 )
                 
                 Button(
                     onClick = onCheckout,
-                    colors = ButtonDefaults.buttonColors(containerColor = Color.White),
-                    modifier = Modifier.border(1.dp, Color(0xFF1565C0))
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.surface),
+                    modifier = Modifier.shadow(4.dp, RoundedCornerShape(8.dp))
                 ) {
-                    Text("ORDENAR", color = Color(0xFF1565C0))
+                    Text("ORDENAR", color = MaterialTheme.colorScheme.primary)
                 }
             }
         }

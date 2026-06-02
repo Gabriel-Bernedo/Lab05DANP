@@ -2,6 +2,8 @@ package com.example.lab05danp.data.repository
 
 import com.example.lab05danp.data.model.Order
 import com.example.lab05danp.data.model.Product
+import com.example.lab05danp.data.model.User
+
 
 object MockData {
     val categories = listOf("Electronicos", "Sensores", "Actuadores", "Motores")

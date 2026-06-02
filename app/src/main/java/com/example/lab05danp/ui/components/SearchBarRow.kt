@@ -16,6 +16,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.draw.shadow
 
 @Composable
 fun SearchBarRow(
@@ -34,11 +37,11 @@ fun SearchBarRow(
             onValueChange = onQueryChange,
             modifier = Modifier
                 .weight(1f)
-                .border(1.dp, Color.Gray)
+                .border(1.dp, MaterialTheme.colorScheme.outline)
                 .padding(12.dp),
             decorationBox = { innerTextField ->
                 if (query.isEmpty()) {
-                    Text("Buscar un Producto", color = Color.Gray, fontSize = 14.sp)
+                    Text("Buscar un Producto", color = MaterialTheme.colorScheme.outline, fontSize = 14.sp)
                 }
                 innerTextField()
             }
@@ -46,10 +49,10 @@ fun SearchBarRow(
         Spacer(modifier = Modifier.width(8.dp))
         Button(
             onClick = onSearch,
-            colors = ButtonDefaults.buttonColors(containerColor = Color.White),
-            modifier = Modifier.border(1.dp, Color(0xFF1565C0))
+            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.surface),
+            modifier = Modifier.shadow(4.dp, RoundedCornerShape(8.dp))
         ) {
-            Text("Buscar", color = Color(0xFF1565C0))
+            Text("Buscar", color = MaterialTheme.colorScheme.primary)
         }
     }
 }

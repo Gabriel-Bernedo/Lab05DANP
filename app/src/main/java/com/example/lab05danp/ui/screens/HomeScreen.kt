@@ -25,7 +25,8 @@ import com.example.lab05danp.ui.navigation.AppTopBar
 fun HomeScreen(
     onNavigateToDetails: (Product) -> Unit,
     onNavigateToHistory: () -> Unit,
-    onNavigateToCart: () -> Unit
+    onNavigateToCart: () -> Unit,
+    onNavigateToProfile: () -> Unit
 ) {
     var searchQuery by remember { mutableStateOf("") }
     var selectedCategory by remember { mutableStateOf(MockData.categories.first()) }
@@ -43,7 +44,8 @@ fun HomeScreen(
             currentRoute = "inicio", 
             onNavigateToHistory = onNavigateToHistory,
             onNavigateToHome = {},
-            onNavigateToCart = onNavigateToCart
+            onNavigateToCart = onNavigateToCart,
+            onNavigateToProfile = onNavigateToProfile
         ) }
     ) { paddingValues ->
         Column(

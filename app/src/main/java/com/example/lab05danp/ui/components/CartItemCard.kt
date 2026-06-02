@@ -20,6 +20,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.lab05danp.data.model.CartItem
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.draw.shadow
 
 @Composable
 fun CartItemCard(cartItem: CartItem) {
@@ -27,29 +30,29 @@ fun CartItemCard(cartItem: CartItem) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 8.dp)
-            .background(Color(0xFFFFF59D))
-            .border(1.dp, Color.Gray)
+            .shadow(elevation = 6.dp, shape = RoundedCornerShape(16.dp))
+            .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(16.dp))
             .padding(16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Box(
             modifier = Modifier
                 .size(50.dp)
-                .background(Color.White)
-                .border(1.dp, Color.Gray)
+                .background(MaterialTheme.colorScheme.surface)
+                .border(1.dp, MaterialTheme.colorScheme.outline)
         )
         
         Spacer(modifier = Modifier.width(16.dp))
         
         Column(modifier = Modifier.weight(1f)) {
-            Text(cartItem.product.name, color = Color(0xFF1565C0), fontSize = 14.sp)
-            Text("${cartItem.product.currentPrice.toInt()} USD", color = Color(0xFF1565C0), fontSize = 12.sp)
-            Text("x ${cartItem.quantity} unidades", color = Color(0xFF1565C0), fontSize = 12.sp)
+            Text(cartItem.product.name, color = MaterialTheme.colorScheme.primary, fontSize = 14.sp)
+            Text("${cartItem.product.currentPrice.toInt()} USD", color = MaterialTheme.colorScheme.primary, fontSize = 12.sp)
+            Text("x ${cartItem.quantity} unidades", color = MaterialTheme.colorScheme.primary, fontSize = 12.sp)
         }
         
         Column(horizontalAlignment = Alignment.End) {
-            Text("TOTAL", color = Color(0xFF1565C0), fontSize = 14.sp, fontWeight = FontWeight.Bold)
-            Text("${cartItem.subtotal.toInt()} USD", color = Color(0xFF1565C0), fontSize = 14.sp)
+            Text("TOTAL", color = MaterialTheme.colorScheme.primary, fontSize = 14.sp, fontWeight = FontWeight.Bold)
+            Text("${cartItem.subtotal.toInt()} USD", color = MaterialTheme.colorScheme.primary, fontSize = 14.sp)
         }
     }
 }

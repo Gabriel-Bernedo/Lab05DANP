@@ -24,6 +24,9 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.lab05danp.data.model.Product
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.draw.shadow
 
 @Composable
 fun ProductCard(
@@ -34,8 +37,8 @@ fun ProductCard(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 8.dp)
-            .background(Color(0xFFFFF59D))
-            .border(1.dp, Color.Gray)
+            .shadow(elevation = 6.dp, shape = RoundedCornerShape(16.dp))
+            .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(16.dp))
             .padding(12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -43,8 +46,7 @@ fun ProductCard(
         Box(
             modifier = Modifier
                 .size(60.dp)
-                .background(Color.White)
-                .border(1.dp, Color.Gray)
+                .background(MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(8.dp))
         )
         
         Spacer(modifier = Modifier.width(16.dp))
@@ -52,23 +54,23 @@ fun ProductCard(
         Column(
             modifier = Modifier.weight(1f)
         ) {
-            Text(text = product.name, color = Color(0xFF1565C0), fontSize = 16.sp)
+            Text(text = product.name, color = MaterialTheme.colorScheme.primary, fontSize = 16.sp)
             if (product.discountPrice != null) {
                 Text(
                     text = "${product.originalPrice.toInt()} USD",
-                    color = Color.Red,
+                    color = MaterialTheme.colorScheme.secondary,
                     fontSize = 12.sp,
                     textDecoration = TextDecoration.LineThrough
                 )
                 Text(
                     text = "${product.discountPrice.toInt()} USD",
-                    color = Color.Red,
+                    color = MaterialTheme.colorScheme.secondary,
                     fontSize = 14.sp
                 )
             } else {
                 Text(
                     text = "${product.originalPrice.toInt()} USD",
-                    color = Color(0xFF1565C0),
+                    color = MaterialTheme.colorScheme.primary,
                     fontSize = 14.sp
                 )
             }
@@ -76,10 +78,11 @@ fun ProductCard(
         
         Button(
             onClick = onDetailsClick,
-            colors = ButtonDefaults.buttonColors(containerColor = Color.White),
-            modifier = Modifier.border(1.dp, Color(0xFF1565C0))
+            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
+            shape = RoundedCornerShape(8.dp),
+            modifier = Modifier.shadow(2.dp, RoundedCornerShape(8.dp))
         ) {
-            Text("Ver detalles", color = Color(0xFF1565C0), fontSize = 12.sp)
+            Text("Ver detalles", color = MaterialTheme.colorScheme.surface, fontSize = 12.sp)
         }
     }
 }

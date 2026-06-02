@@ -20,6 +20,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.lab05danp.data.model.Order
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.draw.shadow
 
 @Composable
 fun OrderCard(
@@ -30,25 +33,25 @@ fun OrderCard(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 8.dp)
-            .background(Color(0xFFFFF59D))
-            .border(1.dp, Color.Gray)
+            .shadow(elevation = 6.dp, shape = RoundedCornerShape(16.dp))
+            .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(16.dp))
             .padding(16.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
         Column {
-            Text("Fecha: ${order.date}", color = Color(0xFF1565C0), fontSize = 14.sp)
-            Text(order.status, color = if (order.status == "PENDIENTE") Color.Gray else Color(0xFF64B5F6), fontSize = 10.sp, modifier = Modifier.border(1.dp, Color.Gray).padding(2.dp).background(Color.White))
+            Text("Fecha: ${order.date}", color = MaterialTheme.colorScheme.primary, fontSize = 14.sp)
+            Text(order.status, color = if (order.status == "PENDIENTE") MaterialTheme.colorScheme.outline else MaterialTheme.colorScheme.primary, fontSize = 10.sp, modifier = Modifier.border(1.dp, MaterialTheme.colorScheme.outline).padding(2.dp).background(MaterialTheme.colorScheme.surface))
             Spacer(modifier = Modifier.height(4.dp))
-            Text("Total: ${order.totalAmount.toInt()} USD", color = Color(0xFF1565C0), fontSize = 14.sp, fontWeight = FontWeight.Bold)
+            Text("Total: ${order.totalAmount.toInt()} USD", color = MaterialTheme.colorScheme.primary, fontSize = 14.sp, fontWeight = FontWeight.Bold)
         }
         
         Button(
             onClick = onDetailsClick,
-            colors = ButtonDefaults.buttonColors(containerColor = Color.White),
-            modifier = Modifier.border(1.dp, Color(0xFF1565C0))
+            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.surface),
+            modifier = Modifier.shadow(4.dp, RoundedCornerShape(8.dp))
         ) {
-            Text("Ver\ndetalles", color = Color(0xFF1565C0), fontSize = 12.sp)
+            Text("Ver\ndetalles", color = MaterialTheme.colorScheme.primary, fontSize = 12.sp)
         }
     }
 }

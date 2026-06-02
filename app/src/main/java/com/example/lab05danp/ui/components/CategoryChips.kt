@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.material3.MaterialTheme
 
 @Composable
 fun CategoryChips(
@@ -32,15 +33,15 @@ fun CategoryChips(
             val isSelected = category == selectedCategory
             Box(
                 modifier = Modifier
-                    .background(if (isSelected) Color(0xFF90CAF9) else Color(0xFFFFF59D))
-                    .border(1.dp, Color.Gray)
+                    .background(if (isSelected) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceVariant)
+                    .border(1.dp, MaterialTheme.colorScheme.outline)
                     .clickable { onCategorySelected(category) }
                     .padding(horizontal = 12.dp, vertical = 8.dp),
                 contentAlignment = Alignment.Center
             ) {
                 Text(
                     text = category,
-                    color = Color(0xFF1565C0),
+                    color = MaterialTheme.colorScheme.primary,
                     fontSize = 12.sp
                 )
             }

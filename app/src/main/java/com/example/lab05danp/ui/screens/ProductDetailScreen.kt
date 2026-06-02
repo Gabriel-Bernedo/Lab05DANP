@@ -30,6 +30,9 @@ import com.example.lab05danp.ui.components.QuantitySelector
 import com.example.lab05danp.ui.components.ScreenHeader
 import com.example.lab05danp.ui.navigation.AppBottomBar
 import com.example.lab05danp.ui.navigation.AppTopBar
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.draw.shadow
 
 @Composable
 fun ProductDetailScreen(
@@ -63,19 +66,19 @@ fun ProductDetailScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(200.dp)
-                        .background(Color.White)
-                        .border(1.dp, Color.Gray)
+                        .background(MaterialTheme.colorScheme.surface)
+                        .border(1.dp, MaterialTheme.colorScheme.outline)
                 )
                 
                 Spacer(modifier = Modifier.height(16.dp))
                 
                 Text(
                     text = product.name,
-                    color = Color(0xFF1565C0),
+                    color = MaterialTheme.colorScheme.primary,
                     fontSize = 24.sp,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .background(Color(0xFFFFF59D))
+                        .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(16.dp))
                         .padding(8.dp)
                 )
                 
@@ -83,7 +86,7 @@ fun ProductDetailScreen(
                 
                 Text(
                     text = "Precio: ${product.currentPrice.toInt()} USD",
-                    color = Color(0xFF1565C0),
+                    color = MaterialTheme.colorScheme.primary,
                     fontSize = 18.sp
                 )
                 
@@ -93,13 +96,13 @@ fun ProductDetailScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .weight(1f)
-                        .background(Color(0xFFFFF59D))
-                        .border(1.dp, Color.Gray)
+                        .shadow(elevation = 6.dp, shape = RoundedCornerShape(16.dp))
+            .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(16.dp))
                         .padding(16.dp)
                 ) {
                     Text(
                         text = "Descripción:\n${product.description}",
-                        color = Color(0xFF1565C0),
+                        color = MaterialTheme.colorScheme.primary,
                         fontSize = 14.sp
                     )
                 }
@@ -109,14 +112,14 @@ fun ProductDetailScreen(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(Color(0xFFFFF59D))
-                    .border(1.dp, Color.Gray)
+                    .shadow(elevation = 6.dp, shape = RoundedCornerShape(16.dp))
+            .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(16.dp))
                     .padding(16.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Column {
-                    Text("TOTAL: ${(product.currentPrice * quantity).toInt()} USD", color = Color(0xFF1565C0))
+                    Text("TOTAL: ${(product.currentPrice * quantity).toInt()} USD", color = MaterialTheme.colorScheme.primary)
                     Spacer(modifier = Modifier.height(8.dp))
                     QuantitySelector(
                         quantity = quantity,
@@ -131,10 +134,10 @@ fun ProductDetailScreen(
                             onAddToCart(product, quantity)
                         }
                     },
-                    colors = ButtonDefaults.buttonColors(containerColor = Color.White),
-                    modifier = Modifier.border(1.dp, Color(0xFF1565C0))
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.surface),
+                    modifier = Modifier.shadow(4.dp, RoundedCornerShape(8.dp))
                 ) {
-                    Text("Añadir al Carrito", color = Color(0xFF1565C0))
+                    Text("Añadir al Carrito", color = MaterialTheme.colorScheme.primary)
                 }
             }
         }
