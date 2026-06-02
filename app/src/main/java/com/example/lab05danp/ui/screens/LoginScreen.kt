@@ -1,7 +1,6 @@
 package com.example.lab05danp.ui.screens
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -12,37 +11,32 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.lab05danp.data.model.User
-import com.example.lab05danp.data.repository.IUserRepository
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.draw.shadow
 
 @Composable
 fun LoginScreen(
-    userRepository: IUserRepository,
-    onLoginSuccess: (User) -> Unit,
+    viewModel: LoginViewModel,
+    onLoginSuccess: () -> Unit,
     onNavigateToRegister: () -> Unit
 ) {
-    var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
-    var errorMessage by remember { mutableStateOf<String?>(null) }
+    val email by viewModel.email.collectAsState()
+    val password by viewModel.password.collectAsState()
+    val errorMessage by viewModel.errorMessage.collectAsState()
 
     Column(
         modifier = Modifier
@@ -69,13 +63,13 @@ fun LoginScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .shadow(elevation = 6.dp, shape = RoundedCornerShape(16.dp))
-            .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(16.dp))
+                .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(16.dp))
                 .padding(24.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             OutlinedTextField(
                 value = email,
-                onValueChange = { email = it; errorMessage = null },
+                onValueChange = { viewModel.updateEmail(it) },
                 label = { Text("Email") },
                 modifier = Modifier.fillMaxWidth(),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
@@ -83,7 +77,7 @@ fun LoginScreen(
             )
             OutlinedTextField(
                 value = password,
-                onValueChange = { password = it; errorMessage = null },
+                onValueChange = { viewModel.updatePassword(it) },
                 label = { Text("Contraseña") },
                 modifier = Modifier.fillMaxWidth(),
                 visualTransformation = PasswordVisualTransformation(),
@@ -97,11 +91,8 @@ fun LoginScreen(
 
             Button(
                 onClick = {
-                    val user = userRepository.login(email, password)
-                    if (user != null) {
-                        onLoginSuccess(user)
-                    } else {
-                        errorMessage = "Email o contraseña incorrectos"
+                    if (viewModel.login()) {
+                        onLoginSuccess()
                     }
                 },
                 modifier = Modifier.fillMaxWidth(),
