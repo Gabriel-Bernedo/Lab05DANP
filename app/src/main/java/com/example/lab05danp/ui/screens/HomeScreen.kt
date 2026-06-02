@@ -7,13 +7,10 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import com.example.lab05danp.data.model.Product
-import com.example.lab05danp.data.repository.MockData
 import com.example.lab05danp.ui.components.CategoryChips
 import com.example.lab05danp.ui.components.ProductCard
 import com.example.lab05danp.ui.components.ScreenHeader
@@ -23,20 +20,13 @@ import com.example.lab05danp.ui.navigation.AppTopBar
 
 @Composable
 fun HomeScreen(
+    viewModel: HomeViewModel,
     onNavigateToDetails: (Product) -> Unit,
     onNavigateToHistory: () -> Unit,
     onNavigateToCart: () -> Unit,
     onNavigateToProfile: () -> Unit
 ) {
-    var searchQuery by remember { mutableStateOf("") }
-    var selectedCategory by remember { mutableStateOf(MockData.categories.first()) }
-    
-    val filteredProducts = remember(searchQuery, selectedCategory) {
-        MockData.products.filter {
-            it.category == selectedCategory && 
-            it.name.contains(searchQuery, ignoreCase = true)
-        }
-    }
+    val uiState by viewModel.uiState.collectAsState()
 
     Scaffold(
         topBar = { AppTopBar() },
@@ -56,19 +46,19 @@ fun HomeScreen(
             ScreenHeader(title = "BIENVENIDO !!!\nLO QUE QUIERAS EN MICRO COMPONENTES")
             
             CategoryChips(
-                categories = MockData.categories,
-                selectedCategory = selectedCategory,
-                onCategorySelected = { selectedCategory = it }
+                categories = uiState.categories,
+                selectedCategory = uiState.selectedCategory,
+                onCategorySelected = { viewModel.selectCategory(it) }
             )
             
             SearchBarRow(
-                query = searchQuery,
-                onQueryChange = { searchQuery = it },
-                onSearch = { /* Ya se filtra reactivamente con remember */ }
+                query = uiState.searchQuery,
+                onQueryChange = { viewModel.updateSearchQuery(it) },
+                onSearch = { /* Filtrado reactivo en ViewModel */ }
             )
             
             LazyColumn(modifier = Modifier.weight(1f)) {
-                items(filteredProducts) { product ->
+                items(uiState.filteredProducts) { product ->
                     ProductCard(
                         product = product,
                         onDetailsClick = { onNavigateToDetails(product) }

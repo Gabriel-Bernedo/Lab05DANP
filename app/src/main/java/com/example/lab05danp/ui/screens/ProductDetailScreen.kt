@@ -13,44 +13,50 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.draw.shadow
 import com.example.lab05danp.data.model.Product
 import com.example.lab05danp.ui.components.QuantitySelector
 import com.example.lab05danp.ui.components.ScreenHeader
 import com.example.lab05danp.ui.navigation.AppBottomBar
 import com.example.lab05danp.ui.navigation.AppTopBar
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.ui.draw.shadow
+import kotlinx.coroutines.launch
 
 @Composable
 fun ProductDetailScreen(
+    viewModel: ProductDetailViewModel,
     product: Product,
-    onAddToCart: (Product, Int) -> Unit,
     onNavigateToHistory: () -> Unit,
     onNavigateToHome: () -> Unit,
     onNavigateToCart: () -> Unit
 ) {
-    var quantity by remember { mutableStateOf(1) }
+    val quantity by viewModel.quantity.collectAsState()
+    val snackbarHostState = remember { SnackbarHostState() }
+    val coroutineScope = rememberCoroutineScope()
 
     Scaffold(
         topBar = { AppTopBar() },
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         bottomBar = { AppBottomBar(
             currentRoute = "inicio",
             onNavigateToHistory = onNavigateToHistory,
             onNavigateToHome = onNavigateToHome,
-            onNavigateToCart = onNavigateToCart
+            onNavigateToCart = onNavigateToCart,
+            onNavigateToProfile = {}
         ) }
     ) { paddingValues ->
         Column(
@@ -97,7 +103,7 @@ fun ProductDetailScreen(
                         .fillMaxWidth()
                         .weight(1f)
                         .shadow(elevation = 6.dp, shape = RoundedCornerShape(16.dp))
-            .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(16.dp))
+                        .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(16.dp))
                         .padding(16.dp)
                 ) {
                     Text(
@@ -113,7 +119,7 @@ fun ProductDetailScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .shadow(elevation = 6.dp, shape = RoundedCornerShape(16.dp))
-            .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(16.dp))
+                    .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(16.dp))
                     .padding(16.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
@@ -123,15 +129,16 @@ fun ProductDetailScreen(
                     Spacer(modifier = Modifier.height(8.dp))
                     QuantitySelector(
                         quantity = quantity,
-                        onIncrease = { quantity++ },
-                        onDecrease = { quantity-- }
+                        onIncrease = { viewModel.increaseQuantity() },
+                        onDecrease = { viewModel.decreaseQuantity() }
                     )
                 }
                 
                 Button(
                     onClick = { 
-                        if (quantity > 0) {
-                            onAddToCart(product, quantity)
+                        viewModel.addToCart(product)
+                        coroutineScope.launch {
+                            snackbarHostState.showSnackbar("Producto añadido al carrito")
                         }
                     },
                     colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.surface),
