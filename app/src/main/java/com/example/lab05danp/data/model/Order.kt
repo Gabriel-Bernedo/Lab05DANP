@@ -4,5 +4,6 @@ data class Order(
     val id: Int,
     val date: String,
     val status: String, // "PENDIENTE", "ENTREGADO"
-    val totalAmount: Double
+    val totalAmount: Double,
+    val items: List<CartItem> = emptyList()
 )

@@ -1,7 +1,6 @@
 package com.example.lab05danp.ui.screens
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -12,42 +11,43 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.lab05danp.data.model.CartItem
-import com.example.lab05danp.data.model.User
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.draw.shadow
 import com.example.lab05danp.ui.components.ScreenHeader
 import com.example.lab05danp.ui.navigation.AppBottomBar
 import com.example.lab05danp.ui.navigation.AppTopBar
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.ui.draw.shadow
 
 @Composable
 fun CheckoutScreen(
-    cartItems: List<CartItem>,
-    user: User,
-    onConfirmOrder: () -> Unit,
+    viewModel: CheckoutViewModel,
+    onConfirmSuccess: () -> Unit,
     onNavigateToHistory: () -> Unit,
     onNavigateToHome: () -> Unit,
     onNavigateToCart: () -> Unit,
     onNavigateToProfile: () -> Unit
 ) {
+    val cartItems by viewModel.cartItems.collectAsState()
+    val user by viewModel.currentUser.collectAsState()
+    val errorMessage by viewModel.errorMessage.collectAsState()
+    
     val totalAmount = cartItems.sumOf { it.subtotal }
-    var address by remember { mutableStateOf(user.address) }
+    var address by remember { mutableStateOf(user?.address ?: "") }
     var selectedPayment by remember { mutableStateOf("Tarjeta") }
     val paymentMethods = listOf("Tarjeta", "Efectivo", "Transferencia")
 
@@ -109,7 +109,10 @@ fun CheckoutScreen(
                 // Dirección de envío
                 OutlinedTextField(
                     value = address,
-                    onValueChange = { address = it },
+                    onValueChange = { 
+                        address = it
+                        viewModel.clearError() 
+                    },
                     label = { Text("Dirección de entrega") },
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -136,11 +139,19 @@ fun CheckoutScreen(
                         }
                     }
                 }
+                
+                errorMessage?.let {
+                    Text(it, color = MaterialTheme.colorScheme.secondary, fontSize = 14.sp, fontWeight = FontWeight.Bold)
+                }
             }
 
             // Botón confirmar
             Button(
-                onClick = onConfirmOrder,
+                onClick = {
+                    if (viewModel.confirmOrder(address)) {
+                        onConfirmSuccess()
+                    }
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp)
