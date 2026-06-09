@@ -22,6 +22,7 @@ class AppViewModelFactory(
     private val sessionRepository: ISessionRepository,
     private val cartRepository: ICartRepository,
     private val orderRepository: IOrderRepository,
+    private val sessionManager: com.example.lab05danp.domain.session.ISessionManager,
     private val appViewModel: AppViewModel // Usado solo para navegación si se mantiene
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -42,7 +43,7 @@ class AppViewModelFactory(
                 CartViewModel(cartRepository) as T
             }
             modelClass.isAssignableFrom(ProductDetailViewModel::class.java) -> {
-                ProductDetailViewModel(cartRepository) as T
+                ProductDetailViewModel(cartRepository, sessionManager) as T
             }
             modelClass.isAssignableFrom(CheckoutViewModel::class.java) -> {
                 CheckoutViewModel(cartRepository, sessionRepository, orderRepository) as T

@@ -6,8 +6,11 @@ import com.example.lab05danp.data.repository.ICartRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
+import com.example.lab05danp.domain.session.ISessionManager
+
 class ProductDetailViewModel(
-    private val cartRepository: ICartRepository
+    private val cartRepository: ICartRepository,
+    private val sessionManager: ISessionManager
 ) : ViewModel() {
 
     private val _quantity = MutableStateFlow(1)
@@ -28,5 +31,9 @@ class ProductDetailViewModel(
             cartRepository.addToCart(product, _quantity.value)
             _quantity.value = 1 // Reset after adding
         }
+    }
+
+    fun recordVisit(product: Product) {
+        sessionManager.recordProductVisit(product)
     }
 }
