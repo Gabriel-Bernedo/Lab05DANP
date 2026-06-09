@@ -49,24 +49,21 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    // Inicializar Singleton Repositories
-                    val userRepository = remember { UserRepositoryImpl() }
-                    val productRepository = remember { ProductRepositoryImpl() }
-                    val sessionRepository = remember { SessionRepositoryImpl() }
-                    val cartRepository = remember { CartRepositoryImpl() }
-                    val orderRepository = remember { OrderRepositoryImpl() }
+                    // Obtener AppContainer desde la Application
+                    val appContainer = (application as MarketplaceApplication).container
 
                     // Navigation ViewModel
                     val appViewModel = remember { AppViewModel() }
 
-                    // Factory para inyectar dependencias a los ViewModels
+                    // Factory para inyectar dependencias a los ViewModels desde el AppContainer
                     val factory = remember {
                         AppViewModelFactory(
-                            userRepository = userRepository,
-                            productRepository = productRepository,
-                            sessionRepository = sessionRepository,
-                            cartRepository = cartRepository,
-                            orderRepository = orderRepository,
+                            userRepository = appContainer.userRepository,
+                            productRepository = appContainer.productRepository,
+                            sessionRepository = appContainer.sessionRepository,
+                            cartRepository = appContainer.cartRepository,
+                            orderRepository = appContainer.orderRepository,
+                            sessionManager = appContainer.sessionManager,
                             appViewModel = appViewModel
                         )
                     }
