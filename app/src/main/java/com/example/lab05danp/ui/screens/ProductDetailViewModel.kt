@@ -8,7 +8,11 @@ import kotlinx.coroutines.flow.asStateFlow
 
 import com.example.lab05danp.domain.session.ISessionManager
 
-class ProductDetailViewModel(
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
+
+@HiltViewModel
+class ProductDetailViewModel @Inject constructor(
     private val cartRepository: ICartRepository,
     private val sessionManager: ISessionManager
 ) : ViewModel() {

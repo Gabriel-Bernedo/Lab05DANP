@@ -6,7 +6,11 @@ import com.example.lab05danp.data.repository.IUserRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
-class RegisterViewModel(
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
+
+@HiltViewModel
+class RegisterViewModel @Inject constructor(
     private val userRepository: IUserRepository,
     private val sessionRepository: ISessionRepository
 ) : ViewModel() {

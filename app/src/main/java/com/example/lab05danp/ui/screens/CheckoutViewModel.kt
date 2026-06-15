@@ -11,7 +11,11 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-class CheckoutViewModel(
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
+
+@HiltViewModel
+class CheckoutViewModel @Inject constructor(
     private val cartRepository: ICartRepository,
     private val sessionRepository: ISessionRepository,
     private val orderRepository: IOrderRepository

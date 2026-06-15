@@ -4,7 +4,11 @@ import androidx.lifecycle.ViewModel
 import com.example.lab05danp.data.repository.IOrderRepository
 import com.example.lab05danp.data.repository.ISessionRepository
 
-class HistoryViewModel(
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
+
+@HiltViewModel
+class HistoryViewModel @Inject constructor(
     private val orderRepository: IOrderRepository,
     private val sessionRepository: ISessionRepository
 ) : ViewModel() {

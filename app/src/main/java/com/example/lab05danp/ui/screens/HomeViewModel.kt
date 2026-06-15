@@ -10,7 +10,8 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
-
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 data class HomeUiState(
     val searchQuery: String = "",
     val selectedCategory: String = "",
@@ -19,7 +20,9 @@ data class HomeUiState(
     val isLoading: Boolean = false
 )
 
-class HomeViewModel(
+
+@HiltViewModel
+class HomeViewModel @Inject constructor(
     private val productRepository: IProductRepository
 ) : ViewModel() {
 

@@ -5,7 +5,11 @@ import com.example.lab05danp.data.model.CartItem
 import com.example.lab05danp.data.repository.ICartRepository
 import kotlinx.coroutines.flow.StateFlow
 
-class CartViewModel(
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
+
+@HiltViewModel
+class CartViewModel @Inject constructor(
     private val cartRepository: ICartRepository
 ) : ViewModel() {
 

@@ -19,7 +19,7 @@ import com.example.lab05danp.data.repository.ProductRepositoryImpl
 import com.example.lab05danp.data.repository.SessionRepositoryImpl
 import com.example.lab05danp.data.repository.UserRepositoryImpl
 import com.example.lab05danp.ui.AppViewModel
-import com.example.lab05danp.ui.AppViewModelFactory
+
 import com.example.lab05danp.ui.screens.CartScreen
 import com.example.lab05danp.ui.screens.CartViewModel
 import com.example.lab05danp.ui.screens.CheckoutScreen
@@ -39,6 +39,10 @@ import com.example.lab05danp.ui.screens.RegisterScreen
 import com.example.lab05danp.ui.screens.RegisterViewModel
 import com.example.lab05danp.ui.theme.Lab05DANPTheme
 
+import dagger.hilt.android.AndroidEntryPoint
+import androidx.hilt.navigation.compose.hiltViewModel
+
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,26 +53,10 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    // Obtener AppContainer desde la Application
-                    val appContainer = (application as MarketplaceApplication).container
-
                     // Navigation ViewModel
-                    val appViewModel = remember { AppViewModel() }
+                    val appViewModel: AppViewModel = hiltViewModel()
 
-                    // Factory para inyectar dependencias a los ViewModels desde el AppContainer
-                    val factory = remember {
-                        AppViewModelFactory(
-                            userRepository = appContainer.userRepository,
-                            productRepository = appContainer.productRepository,
-                            sessionRepository = appContainer.sessionRepository,
-                            cartRepository = appContainer.cartRepository,
-                            orderRepository = appContainer.orderRepository,
-                            sessionManager = appContainer.sessionManager,
-                            appViewModel = appViewModel
-                        )
-                    }
-
-                    MarketplaceApp(appViewModel, factory)
+                    MarketplaceApp(appViewModel)
                 }
             }
         }
@@ -80,7 +68,7 @@ enum class Screen {
 }
 
 @Composable
-fun MarketplaceApp(appViewModel: AppViewModel, factory: AppViewModelFactory) {
+fun MarketplaceApp(appViewModel: AppViewModel) {
 
     val currentScreen by appViewModel.currentScreen.collectAsState()
     val selectedProduct by appViewModel.selectedProduct.collectAsState()
@@ -88,7 +76,7 @@ fun MarketplaceApp(appViewModel: AppViewModel, factory: AppViewModelFactory) {
 
     when (currentScreen) {
         Screen.LOGIN -> {
-            val viewModel: LoginViewModel = viewModel(factory = factory)
+            val viewModel: LoginViewModel = hiltViewModel()
             LoginScreen(
                 viewModel = viewModel,
                 onLoginSuccess = { appViewModel.navigateTo(Screen.HOME) },
@@ -97,7 +85,7 @@ fun MarketplaceApp(appViewModel: AppViewModel, factory: AppViewModelFactory) {
         }
 
         Screen.REGISTER -> {
-            val viewModel: RegisterViewModel = viewModel(factory = factory)
+            val viewModel: RegisterViewModel = hiltViewModel()
             RegisterScreen(
                 viewModel = viewModel,
                 onRegisterSuccess = { appViewModel.navigateTo(Screen.HOME) },
@@ -106,7 +94,7 @@ fun MarketplaceApp(appViewModel: AppViewModel, factory: AppViewModelFactory) {
         }
 
         Screen.HOME -> {
-            val viewModel: HomeViewModel = viewModel(factory = factory)
+            val viewModel: HomeViewModel = hiltViewModel()
             HomeScreen(
                 viewModel = viewModel,
                 onNavigateToDetails = { product -> appViewModel.selectProductAndNavigate(product) },
@@ -117,7 +105,7 @@ fun MarketplaceApp(appViewModel: AppViewModel, factory: AppViewModelFactory) {
         }
 
         Screen.HISTORY -> {
-            val viewModel: HistoryViewModel = viewModel(factory = factory)
+            val viewModel: HistoryViewModel = hiltViewModel()
             HistoryScreen(
                 viewModel = viewModel,
                 onNavigateToHome = { appViewModel.navigateTo(Screen.HOME) },
@@ -128,7 +116,7 @@ fun MarketplaceApp(appViewModel: AppViewModel, factory: AppViewModelFactory) {
 
         Screen.PRODUCT_DETAIL -> {
             selectedProduct?.let { product ->
-                val viewModel: ProductDetailViewModel = viewModel(factory = factory)
+                val viewModel: ProductDetailViewModel = hiltViewModel()
                 ProductDetailScreen(
                     viewModel = viewModel,
                     product = product,
@@ -152,7 +140,7 @@ fun MarketplaceApp(appViewModel: AppViewModel, factory: AppViewModelFactory) {
         }
 
         Screen.CART -> {
-            val viewModel: CartViewModel = viewModel(factory = factory)
+            val viewModel: CartViewModel = hiltViewModel()
             CartScreen(
                 viewModel = viewModel,
                 onCheckout = { appViewModel.navigateTo(Screen.CHECKOUT) },
@@ -163,7 +151,7 @@ fun MarketplaceApp(appViewModel: AppViewModel, factory: AppViewModelFactory) {
         }
 
         Screen.CHECKOUT -> {
-            val viewModel: CheckoutViewModel = viewModel(factory = factory)
+            val viewModel: CheckoutViewModel = hiltViewModel()
             CheckoutScreen(
                 viewModel = viewModel,
                 onConfirmSuccess = { appViewModel.navigateTo(Screen.HISTORY) },
@@ -175,7 +163,7 @@ fun MarketplaceApp(appViewModel: AppViewModel, factory: AppViewModelFactory) {
         }
 
         Screen.PROFILE -> {
-            val viewModel: ProfileViewModel = viewModel(factory = factory)
+            val viewModel: ProfileViewModel = hiltViewModel()
             ProfileScreen(
                 viewModel = viewModel,
                 onLogoutSuccess = { appViewModel.navigateTo(Screen.LOGIN) },
