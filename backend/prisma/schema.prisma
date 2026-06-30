@@ -16,6 +16,7 @@ model User {
   createdAt DateTime @default(now())
   
   cart      Cart?
+  orders    Order[]
 }
 
 model Product {
@@ -27,6 +28,7 @@ model Product {
   image       String
   
   cartItems   CartItem[]
+  orderItems  OrderItem[]
 }
 
 model Cart {
@@ -45,4 +47,26 @@ model CartItem {
   quantity  Int      @default(1)
 
   @@unique([cartId, productId])
+}
+
+model Order {
+  id          Int         @id @default(autoincrement())
+  userId      Int
+  user        User        @relation(fields: [userId], references: [id])
+  date        String
+  status      String      @default("PENDIENTE")
+  totalAmount Float
+  items       OrderItem[]
+  createdAt   DateTime    @default(now())
+}
+
+model OrderItem {
+  id        Int      @id @default(autoincrement())
+  orderId   Int
+  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId Int
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  quantity  Int      @default(1)
+  
+  @@unique([orderId, productId])
 }

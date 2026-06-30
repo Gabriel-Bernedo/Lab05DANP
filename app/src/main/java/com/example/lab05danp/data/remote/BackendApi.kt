@@ -33,6 +33,12 @@ interface BackendApi {
 
     @DELETE("rest/v1/cart")
     suspend fun clearCart()
+
+    @GET("rest/v1/orders")
+    suspend fun getOrders(): List<com.example.lab05danp.data.remote.dto.OrderDto>
+
+    @POST("rest/v1/orders")
+    suspend fun createOrder(): com.example.lab05danp.data.remote.dto.OrderDto
 }
 
 object RetrofitClient {

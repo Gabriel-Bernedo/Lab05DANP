@@ -12,6 +12,8 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.foundation.layout.padding
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.lab05danp.data.repository.CartRepositoryImpl
 import com.example.lab05danp.data.repository.OrderRepositoryImpl
@@ -64,7 +66,7 @@ class MainActivity : ComponentActivity() {
 }
 
 enum class Screen {
-    LOGIN, REGISTER, HOME, HISTORY, CART, CHECKOUT, PRODUCT_DETAIL, ORDER_DETAIL, PROFILE
+    LOGIN, REGISTER, HOME, HISTORY, CART, CHECKOUT, PRODUCT_DETAIL, ORDER_DETAIL, PROFILE, NO_CONNECTION
 }
 
 @Composable
@@ -75,6 +77,20 @@ fun MarketplaceApp(appViewModel: AppViewModel) {
     val selectedOrder by appViewModel.selectedOrder.collectAsState()
 
     when (currentScreen) {
+        Screen.NO_CONNECTION -> {
+            androidx.compose.foundation.layout.Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = androidx.compose.ui.Alignment.Center
+            ) {
+                androidx.compose.material3.Text(
+                    text = "Perdón, pero se necesita conectividad para usar la aplicación.",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.error,
+                    textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+                    modifier = Modifier.padding(16.dp)
+                )
+            }
+        }
         Screen.LOGIN -> {
             val viewModel: LoginViewModel = hiltViewModel()
             LoginScreen(

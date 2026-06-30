@@ -148,7 +148,7 @@ fun CheckoutScreen(
             // Botón confirmar
             Button(
                 onClick = {
-                    if (viewModel.confirmOrder(address)) {
+                    viewModel.confirmOrder(address) {
                         onConfirmSuccess()
                     }
                 },

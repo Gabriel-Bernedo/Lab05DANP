@@ -16,6 +16,9 @@ import java.util.Locale
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.SharingStarted
+
 @HiltViewModel
 class CheckoutViewModel @Inject constructor(
     private val cartRepository: ICartRepository,
@@ -23,28 +26,32 @@ class CheckoutViewModel @Inject constructor(
     private val orderRepository: IOrderRepository
 ) : ViewModel() {
 
-    val cartItems = cartRepository.cartItems
+    val cartItems = cartRepository.cartItems.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = emptyList()
+    )
     val currentUser = sessionRepository.currentUser
 
     private val _errorMessage = MutableStateFlow<String?>(null)
     val errorMessage = _errorMessage.asStateFlow()
 
-    fun confirmOrder(address: String): Boolean {
+    fun confirmOrder(address: String, onSuccess: () -> Unit) {
         if (address.isBlank()) {
             _errorMessage.value = "La dirección de entrega es obligatoria"
-            return false
+            return
         }
 
         val items = cartItems.value
         if (items.isEmpty()) {
             _errorMessage.value = "El carrito está vacío"
-            return false
+            return
         }
 
         val totalAmount = items.sumOf { it.subtotal }
         val date = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(Date())
         
-        // Generar un ID simple en memoria basado en el tiempo
+        // ID temporal hasta que el backend asigne uno real (o si falla, se queda con este)
         val orderId = (System.currentTimeMillis() % 100000).toInt()
 
         val newOrder = Order(
@@ -55,12 +62,12 @@ class CheckoutViewModel @Inject constructor(
             items = items
         )
 
-        orderRepository.addOrder(newOrder)
         viewModelScope.launch {
+            orderRepository.addOrder(newOrder)
             cartRepository.clearCart()
+            _errorMessage.value = null
+            onSuccess()
         }
-        _errorMessage.value = null
-        return true
     }
 
     fun clearError() {

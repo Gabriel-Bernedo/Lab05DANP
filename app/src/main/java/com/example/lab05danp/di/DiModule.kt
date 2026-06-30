@@ -32,26 +32,26 @@ object DiModule {
 
     @Provides
     @Singleton
-    fun provideProductRepository(): IProductRepository {
-        return ProductRepositoryImpl()
+    fun provideProductRepository(productDao: com.example.lab05danp.data.local.dao.ProductDao): IProductRepository {
+        return ProductRepositoryImpl(productDao)
     }
 
     @Provides
     @Singleton
-    fun provideSessionRepository(): ISessionRepository {
-        return SessionRepositoryImpl()
+    fun provideSessionRepository(userDao: com.example.lab05danp.data.local.dao.UserDao): ISessionRepository {
+        return SessionRepositoryImpl(userDao)
     }
 
     @Provides
     @Singleton
-    fun provideCartRepository(): ICartRepository {
-        return CartRepositoryImpl()
+    fun provideCartRepository(cartDao: com.example.lab05danp.data.local.dao.CartDao): ICartRepository {
+        return CartRepositoryImpl(cartDao)
     }
 
     @Provides
     @Singleton
-    fun provideOrderRepository(): IOrderRepository {
-        return OrderRepositoryImpl()
+    fun provideOrderRepository(orderDao: com.example.lab05danp.data.local.dao.OrderDao): IOrderRepository {
+        return OrderRepositoryImpl(orderDao)
     }
 
     @Provides
