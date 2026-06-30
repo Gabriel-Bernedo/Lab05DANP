@@ -1,5 +1,7 @@
 import { PrismaClient } from '@prisma/client';
+// @ts-ignore
 import * as bcrypt from 'bcrypt';
+// @ts-ignore
 import { Pool } from 'pg';
 import { PrismaPg } from '@prisma/adapter-pg';
 
