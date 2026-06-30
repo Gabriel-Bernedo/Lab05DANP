@@ -42,7 +42,7 @@ interface BackendApi {
 }
 
 object RetrofitClient {
-    private const val BASE_URL = "https://danp.test.auroboros.lat/"
+    private const val BASE_URL = "https://danp.test-lab10.auroboros.lat/"
 
     var authToken: String? = null
 
