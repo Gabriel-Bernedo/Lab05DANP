@@ -48,16 +48,12 @@ class HomeViewModel @Inject constructor(
         _searchQuery,
         _selectedCategory
     ) { products, query, category ->
-        val filtered = products.filter {
-            // it.category == category &&
-            it.name.contains(query, ignoreCase = true)
-        }
         
         HomeUiState(
             searchQuery = query,
             selectedCategory = category,
             categories = MockData.categories,
-            filteredProducts = filtered,
+            filteredProducts = products, // Sin filtros aplicados, devuelve la lista original completa
             isLoading = false
         )
     }.stateIn(

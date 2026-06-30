@@ -55,13 +55,13 @@ async function main() {
   ]);
 
   // 3. Crear 20 Productos
-  const categories = ["electronics", "jewelery", "men's clothing", "women's clothing"];
+  const categories = ["Electronicos", "Sensores", "Actuadores", "Motores"];
   const productsData = Array.from({ length: 20 }).map((_, i) => ({
-    title: `Producto de Prueba ${i + 1}`,
+    title: `Componente Modelo X-${i + 1}`,
     price: parseFloat((Math.random() * 100 + 10).toFixed(2)),
-    description: `Descripción detallada para el producto de prueba número ${i + 1}. Un artículo indispensable.`,
+    description: `Microcomponente de alta precisión para proyectos de electrónica. Serie número ${i + 1}.`,
     category: categories[i % categories.length],
-    image: `https://picsum.photos/seed/${i + 1}/400/400`
+    image: null
   }));
 
   await prisma.product.createMany({
