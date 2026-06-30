@@ -8,6 +8,9 @@ import kotlinx.coroutines.flow.StateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.launch
+
 @HiltViewModel
 class CartViewModel @Inject constructor(
     private val cartRepository: ICartRepository
@@ -15,7 +18,15 @@ class CartViewModel @Inject constructor(
 
     val cartItems: StateFlow<List<CartItem>> = cartRepository.cartItems
 
+    init {
+        viewModelScope.launch {
+            cartRepository.fetchCart()
+        }
+    }
+
     fun clearCart() {
-        cartRepository.clearCart()
+        viewModelScope.launch {
+            cartRepository.clearCart()
+        }
     }
 }

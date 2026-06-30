@@ -43,7 +43,7 @@ class LoginViewModel @Inject constructor(
                 sessionRepository.loginUser(user)
                 onSuccess()
             } else {
-                _errorMessage.value = "Username o contraseña incorrectos"
+                _errorMessage.value = "Email o contraseña incorrectos"
             }
         }
     }

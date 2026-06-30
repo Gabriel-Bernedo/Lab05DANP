@@ -1,10 +1,19 @@
 package com.example.lab05danp.data.remote.dto
 
+import com.google.gson.annotations.SerializedName
+
 data class LoginRequest(
-    val username: String,
+    val email: String,
     val password: String
 )
 
 data class AuthResponse(
-    val token: String
+    @SerializedName("access_token")
+    val token: String,
+    val user: SupabaseUser?
+)
+
+data class SupabaseUser(
+    val id: String,
+    val email: String
 )

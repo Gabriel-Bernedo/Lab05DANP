@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  api:
+    build: .
+    container_name: ${API_CONTAINER_NAME:-nestjs-api}
+    expose:
+      - "${API_PORT:-3000}"
+    environment:
+      - DATABASE_URL=postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-password123}@${DB_CONTAINER_NAME:-postgres-db}:5432/${POSTGRES_DB:-lab05db}?schema=public
+    depends_on:
+      db:
+        condition: service_healthy
+    # Al arrancar, aplicamos las migraciones y luego levantamos NestJS
+    command: >
+      sh -c "npx prisma migrate deploy && npx prisma db seed && node dist/src/main.js"
+    restart: unless-stopped
+
+  db:
+    image: postgres:15-alpine
+    container_name: ${DB_CONTAINER_NAME:-postgres-db}
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password123}
+      POSTGRES_DB: ${POSTGRES_DB:-lab05db}
+    expose:
+      - "${DB_PORT:-5432}"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  pgdata:

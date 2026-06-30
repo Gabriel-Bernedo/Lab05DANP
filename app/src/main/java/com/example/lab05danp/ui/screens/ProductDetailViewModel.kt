@@ -5,6 +5,8 @@ import com.example.lab05danp.data.model.Product
 import com.example.lab05danp.data.repository.ICartRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.launch
 
 import com.example.lab05danp.domain.session.ISessionManager
 
@@ -27,13 +29,12 @@ class ProductDetailViewModel @Inject constructor(
     fun decreaseQuantity() {
         if (_quantity.value > 1) {
             _quantity.value--
-        }
-    }
-
     fun addToCart(product: Product) {
         if (_quantity.value > 0) {
-            cartRepository.addToCart(product, _quantity.value)
-            _quantity.value = 1 // Reset after adding
+            viewModelScope.launch {
+                cartRepository.addToCart(product, _quantity.value)
+                _quantity.value = 1 // Reset after adding
+            }
         }
     }
 

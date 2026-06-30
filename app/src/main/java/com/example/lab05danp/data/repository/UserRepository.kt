@@ -1,22 +1,27 @@
 package com.example.lab05danp.data.repository
 
 import com.example.lab05danp.data.model.User
+import com.example.lab05danp.data.remote.RetrofitClient
+import com.example.lab05danp.data.remote.dto.LoginRequest
+import com.example.lab05danp.data.remote.dto.RegisterRequestDto
+import com.example.lab05danp.data.remote.dto.UserMetadataDto
 
 class UserRepositoryImpl : IUserRepository {
 
-    // Base de datos en memoria
-    private val users = mutableListOf(
-        User(1, "Admin Demo", "demo@mail.com", "1234", "Av. Arequipa 123")
-    )
-    private var nextId = 2
+    private val users = mutableListOf<User>()
 
     override suspend fun login(email: String, password: String): User? {
         return try {
-            val response = com.example.lab05danp.data.remote.RetrofitClient.api.login(
-                com.example.lab05danp.data.remote.dto.LoginRequest(username = email, password = password)
+            val response = RetrofitClient.api.login(
+                LoginRequest(email = email, password = password)
             )
-            // FakeStore solo retorna el token, mockeamos el User para la app
-            User(nextId++, email, email, "hidden_password", "FakeStore Address")
+            RetrofitClient.authToken = response.token
+            val authUser = response.user
+            if (authUser != null) {
+                User(authUser.id.hashCode(), "Usuario", email, "hidden_password", "Supabase Address")
+            } else {
+                null
+            }
         } catch (e: Exception) {
             null
         }
@@ -28,23 +33,29 @@ class UserRepositoryImpl : IUserRepository {
             val firstName = names.firstOrNull() ?: "User"
             val lastName = if (names.size > 1) names.drop(1).joinToString(" ") else ""
 
-            val request = com.example.lab05danp.data.remote.dto.RegisterRequestDto(
+            val request = RegisterRequestDto(
                 email = email,
-                username = email, // Usamos el email como username
                 password = password,
-                name = com.example.lab05danp.data.remote.dto.NameDto(firstName, lastName),
-                address = com.example.lab05danp.data.remote.dto.AddressDto("City", "Street", 1, "0000", com.example.lab05danp.data.remote.dto.GeolocationDto("0", "0")),
-                phone = "000000000"
+                data = UserMetadataDto(
+                    username = email,
+                    firstname = firstName,
+                    lastname = lastName,
+                    phone = "000000000"
+                )
             )
             
-            val response = com.example.lab05danp.data.remote.RetrofitClient.api.registerUser(request)
+            val response = RetrofitClient.api.registerUser(request)
             
-            // Mockeamos la sesión local para que el flujo no se rompa
-            val user = User(response.id, name, email, password, "FakeStore Address")
-            users.add(user)
-            Result.success(user)
+            val authUser = response.user
+            if (authUser != null) {
+                val user = User(authUser.id.hashCode(), name, email, password, "Supabase Address")
+                users.add(user)
+                Result.success(user)
+            } else {
+                Result.failure(Exception("Error al registrar: respuesta vacía"))
+            }
         } catch (e: Exception) {
-            Result.failure(Exception("Error al registrar en FakeStore: ${e.message}"))
+            Result.failure(Exception("Error al registrar en Supabase: ${e.message}"))
         }
     }
 }
