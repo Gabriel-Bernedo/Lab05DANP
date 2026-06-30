@@ -91,7 +91,7 @@ fun LoginScreen(
 
             Button(
                 onClick = {
-                    if (viewModel.login()) {
+                    viewModel.login {
                         onLoginSuccess()
                     }
                 },

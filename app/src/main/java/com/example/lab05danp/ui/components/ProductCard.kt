@@ -55,25 +55,11 @@ fun ProductCard(
             modifier = Modifier.weight(1f)
         ) {
             Text(text = product.name, color = MaterialTheme.colorScheme.primary, fontSize = 16.sp)
-            if (product.discountPrice != null) {
-                Text(
-                    text = "${product.originalPrice.toInt()} USD",
-                    color = MaterialTheme.colorScheme.secondary,
-                    fontSize = 12.sp,
-                    textDecoration = TextDecoration.LineThrough
-                )
-                Text(
-                    text = "${product.discountPrice.toInt()} USD",
-                    color = MaterialTheme.colorScheme.secondary,
-                    fontSize = 14.sp
-                )
-            } else {
-                Text(
-                    text = "${product.originalPrice.toInt()} USD",
-                    color = MaterialTheme.colorScheme.primary,
-                    fontSize = 14.sp
-                )
-            }
+            Text(
+                text = "${product.originalPrice.toInt()} USD",
+                color = MaterialTheme.colorScheme.primary,
+                fontSize = 14.sp
+            )
         }
         
         Button(
@@ -91,7 +77,7 @@ fun ProductCard(
 @Composable
 fun ProductCardPreview() {
     ProductCard(
-        product = Product(1, "Chip MRC 500", 400.0, 300.0),
+        product = Product(1, "Chip MRC 500", 400.0, "Microcontrolador avanzado", "", "Electronicos"),
         onDetailsClick = {}
     )
 }

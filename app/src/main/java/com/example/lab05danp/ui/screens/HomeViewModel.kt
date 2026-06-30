@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 data class HomeUiState(
@@ -28,7 +29,18 @@ class HomeViewModel @Inject constructor(
 
     private val _searchQuery = MutableStateFlow("")
     private val _selectedCategory = MutableStateFlow(MockData.categories.first())
-    private val _allProducts = MutableStateFlow(productRepository.getProducts())
+    private val _allProducts = MutableStateFlow<List<Product>>(emptyList())
+
+    init {
+        fetchProducts()
+    }
+
+    private fun fetchProducts() {
+        viewModelScope.launch {
+            val products = productRepository.getProducts()
+            _allProducts.value = products
+        }
+    }
 
     // UiState centralizado que combina todos los flujos de estado de la vista
     val uiState: StateFlow<HomeUiState> = combine(
@@ -37,7 +49,7 @@ class HomeViewModel @Inject constructor(
         _selectedCategory
     ) { products, query, category ->
         val filtered = products.filter {
-            it.category == category &&
+            // it.category == category &&
             it.name.contains(query, ignoreCase = true)
         }
         

@@ -6,6 +6,8 @@ import com.example.lab05danp.data.repository.IUserRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
+import kotlinx.coroutines.launch
+import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
@@ -42,25 +44,25 @@ class RegisterViewModel @Inject constructor(
         _errorMessage.value = null
     }
 
-    fun register(): Boolean {
+    fun register(onSuccess: () -> Unit) {
         if (_name.value.isBlank() || _email.value.isBlank() || _password.value.isBlank()) {
             _errorMessage.value = "Por favor completa todos los campos"
-            return false
+            return
         }
 
-        val result = userRepository.register(_name.value, _email.value, _password.value)
-        return if (result.isSuccess) {
-            val user = result.getOrNull()
-            if (user != null) {
-                sessionRepository.loginUser(user)
-                true
+        viewModelScope.launch {
+            val result = userRepository.register(_name.value, _email.value, _password.value)
+            if (result.isSuccess) {
+                val user = result.getOrNull()
+                if (user != null) {
+                    sessionRepository.loginUser(user)
+                    onSuccess()
+                } else {
+                    _errorMessage.value = "Error al iniciar sesión post-registro"
+                }
             } else {
-                _errorMessage.value = "Error al iniciar sesión post-registro"
-                false
+                _errorMessage.value = result.exceptionOrNull()?.message ?: "Error al registrar"
             }
-        } else {
-            _errorMessage.value = result.exceptionOrNull()?.message ?: "Error al registrar"
-            false
         }
     }
 }

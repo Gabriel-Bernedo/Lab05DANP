@@ -97,7 +97,7 @@ fun RegisterScreen(
 
             Button(
                 onClick = {
-                    if (viewModel.register()) {
+                    viewModel.register {
                         onRegisterSuccess()
                     }
                 },

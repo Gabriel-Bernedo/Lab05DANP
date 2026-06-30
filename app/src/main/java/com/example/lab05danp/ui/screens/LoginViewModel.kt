@@ -6,6 +6,8 @@ import com.example.lab05danp.data.repository.IUserRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
+import kotlinx.coroutines.launch
+import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
@@ -34,14 +36,15 @@ class LoginViewModel @Inject constructor(
         _errorMessage.value = null
     }
 
-    fun login(): Boolean {
-        val user = userRepository.login(_email.value, _password.value)
-        return if (user != null) {
-            sessionRepository.loginUser(user)
-            true
-        } else {
-            _errorMessage.value = "Email o contraseña incorrectos"
-            false
+    fun login(onSuccess: () -> Unit) {
+        viewModelScope.launch {
+            val user = userRepository.login(_email.value, _password.value)
+            if (user != null) {
+                sessionRepository.loginUser(user)
+                onSuccess()
+            } else {
+                _errorMessage.value = "Username o contraseña incorrectos"
+            }
         }
     }
 }
