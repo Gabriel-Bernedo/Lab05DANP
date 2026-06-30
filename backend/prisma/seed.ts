@@ -61,7 +61,7 @@ async function main() {
     price: parseFloat((Math.random() * 100 + 10).toFixed(2)),
     description: `Microcomponente de alta precisión para proyectos de electrónica. Serie número ${i + 1}.`,
     category: categories[i % categories.length],
-    image: null
+    image: ""
   }));
 
   await prisma.product.createMany({
