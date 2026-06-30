@@ -29,6 +29,9 @@ class ProductDetailViewModel @Inject constructor(
     fun decreaseQuantity() {
         if (_quantity.value > 1) {
             _quantity.value--
+        }
+    }
+
     fun addToCart(product: Product) {
         if (_quantity.value > 0) {
             viewModelScope.launch {

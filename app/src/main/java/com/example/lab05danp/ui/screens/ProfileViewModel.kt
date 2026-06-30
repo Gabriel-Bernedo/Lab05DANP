@@ -3,6 +3,8 @@ package com.example.lab05danp.ui.screens
 import androidx.lifecycle.ViewModel
 import com.example.lab05danp.data.repository.ICartRepository
 import com.example.lab05danp.data.repository.ISessionRepository
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.launch
 
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
@@ -17,6 +19,8 @@ class ProfileViewModel @Inject constructor(
 
     fun logout() {
         sessionRepository.logoutUser()
-        cartRepository.clearCart()
+        viewModelScope.launch {
+            cartRepository.clearCart()
+        }
     }
 }

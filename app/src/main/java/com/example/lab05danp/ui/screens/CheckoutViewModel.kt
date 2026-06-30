@@ -5,6 +5,8 @@ import com.example.lab05danp.data.model.Order
 import com.example.lab05danp.data.repository.ICartRepository
 import com.example.lab05danp.data.repository.IOrderRepository
 import com.example.lab05danp.data.repository.ISessionRepository
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import java.text.SimpleDateFormat
@@ -54,7 +56,9 @@ class CheckoutViewModel @Inject constructor(
         )
 
         orderRepository.addOrder(newOrder)
-        cartRepository.clearCart()
+        viewModelScope.launch {
+            cartRepository.clearCart()
+        }
         _errorMessage.value = null
         return true
     }
