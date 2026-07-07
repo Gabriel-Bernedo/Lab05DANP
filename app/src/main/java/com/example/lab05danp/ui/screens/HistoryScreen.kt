@@ -52,7 +52,10 @@ fun HistoryScreen(
                 }
             } else {
                 LazyColumn(modifier = Modifier.weight(1f)) {
-                    items(orders) { order ->
+                    items(
+                        items = orders,
+                        key = { order -> order.id }
+                    ) { order ->
                         OrderCard(
                             order = order,
                             onDetailsClick = { onNavigateToOrderDetails(order) }

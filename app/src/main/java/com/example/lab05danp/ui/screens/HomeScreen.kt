@@ -58,7 +58,10 @@ fun HomeScreen(
             )
             
             LazyColumn(modifier = Modifier.weight(1f)) {
-                items(uiState.filteredProducts) { product ->
+                items(
+                    items = uiState.filteredProducts,
+                    key = { product -> product.id }
+                ) { product ->
                     ProductCard(
                         product = product,
                         onDetailsClick = { onNavigateToDetails(product) }

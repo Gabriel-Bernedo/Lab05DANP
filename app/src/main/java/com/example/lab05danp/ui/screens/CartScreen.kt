@@ -64,7 +64,10 @@ fun CartScreen(
                 }
             } else {
                 LazyColumn(modifier = Modifier.weight(1f)) {
-                    items(cartItems) { item ->
+                    items(
+                        items = cartItems,
+                        key = { item -> item.product.id }
+                    ) { item ->
                         CartItemCard(cartItem = item)
                     }
                 }
